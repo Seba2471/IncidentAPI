@@ -1,9 +1,13 @@
+using IncidentAPI;
+using IncidentAPI.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
@@ -16,28 +20,32 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+app.MapGet("/incident", async (string url) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    if (!url.Contains("https://report.bitninja.com/incident-report/"))
+    {
+        return Results.BadRequest("Bad link");
+    }
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateTime.Now.AddDays(index),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+
+    var id = url.Split("incident-report/")[1].Split('?')[0];
+
+    var htmlContext = await GetWebsiteBody.GetHtmlContextByUrl($"https://admin.bitninja.io/iphistory/incidentReport?details={id}");
+    var htmlNodes = await GetHtmlNodesByTag.FromHtmlText(htmlContext, "td");
+
+    var incidentList = new List<Incident>();
+
+    htmlNodes.ForEach(n =>
+    {
+        Incident incident = new(n);
+        if (Incident.IsComplete(incident))
+        {
+            incidentList.Add(incident);
+        }
+    });
+
+    return Results.Ok(incidentList);
 })
-.WithName("GetWeatherForecast");
+.WithName("GetIncidens");
 
 app.Run();
-
-internal record WeatherForecast(DateTime Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
