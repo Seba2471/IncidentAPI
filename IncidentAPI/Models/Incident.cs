@@ -1,5 +1,4 @@
 ﻿using AngleSharp.Dom;
-using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace IncidentAPI.Models
@@ -63,18 +62,11 @@ namespace IncidentAPI.Models
 
         public static bool IsComplete(Incident node)
         {
-            foreach (PropertyInfo pi in node.GetType().GetProperties())
+            if (node.Ip == "" || node.Port == "")
             {
-                if (pi.PropertyType == typeof(string))
-                {
-                    string? value = pi.GetValue(node) as string;
-                    if (string.IsNullOrEmpty(value))
-                    {
-                        return true;
-                    }
-                }
+                return false;
             }
-            return false;
+            return true;
         }
 
     }
