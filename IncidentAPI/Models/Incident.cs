@@ -69,5 +69,21 @@ namespace IncidentAPI.Models
             return true;
         }
 
+        public static bool IsInLast14Days(Incident node)
+        {
+            var now = DateTime.UtcNow;
+
+            DateOnly nodeDate = DateOnly.ParseExact(node.Date, "yyyyMMdd");
+
+            DateOnly nodeDateWithAddedDays = nodeDate.AddDays(14);
+
+            if (nodeDateWithAddedDays >= DateOnly.FromDateTime(now))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
     }
 }

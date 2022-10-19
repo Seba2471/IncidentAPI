@@ -40,7 +40,12 @@ app.MapGet("/incident", async (string url) =>
         Incident incident = new(n);
         if (Incident.IsComplete(incident))
         {
-            incidentList.Add(incident);
+            var incidentInLast14Days = Incident.IsInLast14Days(incident);
+
+            if (incidentInLast14Days)
+            {
+                incidentList.Add(incident);
+            }
         }
     });
 
