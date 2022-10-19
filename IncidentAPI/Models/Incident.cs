@@ -23,7 +23,7 @@ namespace IncidentAPI.Models
                 {
                     var datetime = DateTime.Parse(dateTimeString);
 
-                    datetime.AddHours(2);
+                    datetime.AddHours(4);
 
                     Time = datetime.ToString("HH:mm");
                     Date = datetime.ToString("yyyyMMdd");
