@@ -21,12 +21,12 @@ namespace IncidentAPI.Models
                 var dateTimeString = time.GetAttribute("datetime");
                 if (dateTimeString is not null)
                 {
-                    var datetime = DateTime.Parse(dateTimeString);
+                    var baseDateTime = DateTime.Parse(dateTimeString);
 
-                    datetime.AddHours(2);
+                    var dateTime = baseDateTime.AddHours(2);
 
-                    Time = datetime.ToString("HH:mm");
-                    Date = datetime.ToString("yyyyMMdd");
+                    Time = dateTime.ToString("HH:mm");
+                    Date = dateTime.ToString("yyyyMMdd");
                 }
             }
 
